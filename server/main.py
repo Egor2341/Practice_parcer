@@ -13,25 +13,28 @@ areas_data = json.loads(requests.get("https://api.hh.ru/areas").content.decode()
 areas = {"Россия": 113}
 for area in areas_data[0]['areas']:
     areas[area["name"]] = area["id"]
+    cities = area["areas"]
+    for city in cities:
+        areas[city["name"]] = city["id"]
 
-
-def get_vacancies(text, area):
+def get_vacancies(text:str, area:str = "Россия", salary:str = None):
     page = 0
     cur_urls = []
     while True:
         params = {
             "text": text,
-            "area": areas[area],
+            "area": areas[area.lower().capitalize()],
+            "salary": salary,
             "page": page,
             "per_page": 100
         }
         response = requests.get("https://api.hh.ru/vacancies", params)
         if response.status_code != 200:
-            return {"message": "Что-то пошло не так"}
+            return {"urls": [], "message": "Что-то пошло не так"}
         data = json.loads(response.content.decode())
 
         # if page == data["pages"] - 1:
-        if page == 2:
+        if page == 1:
             break
 
         for item in data["items"]:
@@ -83,7 +86,7 @@ def get_vacancies(text, area):
 
                 vac_url = requests.get(item["url"])
                 if vac_url.status_code != 200:
-                    return {"message": "Что-то пошло не так"}
+                    return {"urls": [], "message": "Что-то пошло не так"}
                 vac_url_data = json.loads(vac_url.content.decode())
 
                 if vac_url_data["key_skills"] != []:
@@ -102,15 +105,34 @@ def get_vacancies(text, area):
         page += 1
         time.sleep(1)
 
-        return cur_urls
+        return {"urls": cur_urls, "message": "OK"}
 
 @app.get("/vacancies")
-def vacancies(text, area):
-    urls = get_vacancies(text, area)
+def vacancies(text: str, area:str = "Россия", salary: str = None):
+    parse_vacs = get_vacancies(text, area, salary)
+    if parse_vacs["message"] != "OK":
+        return {"items": [], "mesage": parse_vacs["message"]}
+    res_vacs = {"items": []}
+    with session_factory() as session:
+        vacs = session.query(Vacancies).filter(Vacancies.url.in_(parse_vacs["urls"])).all()
+        for vac in vacs:
+            res_vacs["items"].append(
+                {
+                    "name": vac.name,
+                    "employer": vac.employer,
+                    "salary": vac.salary,
+                    "url": vac.url,
+                    "requirement": vac.requirement,
+                    "responsibility": vac.responsibility,
+                    "experience": vac.experience,
+                    "employment": vac.employment,
+                    "key_skills": vac.key_skills
+                }
+            )
+        res_vacs["message"] = "OK"
+        return res_vacs
 
-    return
 
-
-# get_vacancies("разработчик", "Россия")
+vacancies("разработчик")
 # create_tables()
 
