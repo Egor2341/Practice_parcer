@@ -6,6 +6,7 @@ import time
 import re
 from data.orm import create_tables
 from fastapi import FastAPI
+from server.pydantic_models import Params
 
 app = FastAPI()
 
@@ -17,7 +18,7 @@ for area in areas_data[0]['areas']:
     for city in cities:
         areas[city["name"]] = city["id"]
 
-def get_vacancies(text:str, area:str = "Россия", salary:str = None):
+def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
     page = 0
     cur_urls = []
     while True:
@@ -36,7 +37,6 @@ def get_vacancies(text:str, area:str = "Россия", salary:str = None):
         # if page == data["pages"] - 1:
         if page == 1:
             break
-
         for item in data["items"]:
             cur_urls.append(item["alternate_url"])
             pattern = re.compile('<.*?>')
@@ -45,6 +45,10 @@ def get_vacancies(text:str, area:str = "Россия", salary:str = None):
                     continue
 
                 vacancy = Vacancies(name=item["name"], url=item["alternate_url"])
+                if item["area"]:
+                    vacancy.area = item["area"]["name"]
+                else:
+                    vacancy.area = "Не указано"
                 if item["employer"]:
                     vacancy.employer = item["employer"]["name"]
                 else:
@@ -56,8 +60,9 @@ def get_vacancies(text:str, area:str = "Россия", salary:str = None):
                         res += f"от {item['salary']['from']} "
                     if item["salary"]["to"]:
                         res += f"до {item['salary']['to']} "
-                    vacancy.salary = res.capitalize()
-                    res += item["salary"]["currency"]
+                    res = res.capitalize()
+                    res += item["salary"]["currency"].upper()
+                    vacancy.salary = res
                 else:
                     vacancy.salary = "Не указано"
 
@@ -91,11 +96,11 @@ def get_vacancies(text:str, area:str = "Россия", salary:str = None):
 
                 if vac_url_data["key_skills"] != []:
                     skills = vac_url_data["key_skills"]
-                    key_skills = ''
+                    key_skills = []
                     for skill in skills:
-                        key_skills += f'{skill["name"]} '
+                        key_skills.append(skill["name"])
 
-                    vacancy.key_skills = key_skills
+                    vacancy.key_skills = ", ".join(key_skills)
                 else:
                     vacancy.key_skills = "Не указано"
 
@@ -107,9 +112,9 @@ def get_vacancies(text:str, area:str = "Россия", salary:str = None):
 
         return {"urls": cur_urls, "message": "OK"}
 
-@app.get("/vacancies")
-def vacancies(text: str, area:str = "Россия", salary: str = None):
-    parse_vacs = get_vacancies(text, area, salary)
+@app.post("/vacancies")
+def vacancies(params: Params):
+    parse_vacs = get_vacancies(params.text, params.area, params.salary)
     if parse_vacs["message"] != "OK":
         return {"items": [], "mesage": parse_vacs["message"]}
     res_vacs = {"items": []}
@@ -121,6 +126,7 @@ def vacancies(text: str, area:str = "Россия", salary: str = None):
                     "name": vac.name,
                     "employer": vac.employer,
                     "salary": vac.salary,
+                    "area": vac.area,
                     "url": vac.url,
                     "requirement": vac.requirement,
                     "responsibility": vac.responsibility,
@@ -130,9 +136,9 @@ def vacancies(text: str, area:str = "Россия", salary: str = None):
                 }
             )
         res_vacs["message"] = "OK"
+        print(res_vacs)
         return res_vacs
 
 
-vacancies("разработчик")
 # create_tables()
 
