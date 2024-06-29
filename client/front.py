@@ -21,13 +21,16 @@ def home(request: Request):
 
 
 @front_app.post("/list_of_vacancies/{todo}", response_class=HTMLResponse)
-def list_of_vacancies(request: Request, text: str = Form(default=""), area: str = Form(default="Россия"),
+def list_of_vacancies(request: Request, todo: str,  text: str = Form(default=""), area: str = Form(default="Россия"),
                       salary: int = Form(default=None)):
-    params = {
-        "text": text,
-        "area": area,
-        "salary": salary
-    }
-    data = requests.post("http://127.0.0.1:3000/vacancies", json=params)
-    print(data.json())
+    if todo == "all":
+        params = {
+            "text": text,
+            "area": area,
+            "salary": salary
+        }
+        data = requests.post("http://127.0.0.1:3000/vacancies", json=params)
+        print(data.json())
+    elif todo == "filter":
+        pass
     return templates.TemplateResponse(request=request, name="list_of_vacancies.html")
