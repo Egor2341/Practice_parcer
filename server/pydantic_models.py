@@ -4,4 +4,4 @@ from typing import Optional
 class Params(BaseModel):
     text: str
     area: str
-    salary: Optional[int]
+    salary: Optional[int] = None

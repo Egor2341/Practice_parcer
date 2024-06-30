@@ -119,7 +119,7 @@ def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
         page += 1
         time.sleep(1)
 
-        return {"urls": cur_urls, "message": "OK"}
+        return {"urls": cur_urls[:75], "message": "OK"}
 
 @app.post("/vacancies")
 def vacancies(params: Params):
@@ -146,7 +146,6 @@ def vacancies(params: Params):
                 }
             )
         res_vacs["message"] = "OK"
-        print(res_vacs)
         return res_vacs
 
 

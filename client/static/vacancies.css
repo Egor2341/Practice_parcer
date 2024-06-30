@@ -27,7 +27,9 @@ h1{
     background-color: #ffffff75;
     height: 8vh;
     border-radius: 10px;
-    border: 2px solid;
+    border: 3px solid white;
+    color: white;
+    font-size: 25px;
 }
 
 .main {
@@ -46,7 +48,11 @@ h1{
 .navigation{
     height: 5vh;
     position: relative;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
 }
+
+
 .right, .left{
     width: 5%;
     background-color: #ffffff75;
@@ -63,6 +69,48 @@ h1{
 }
 
 .list{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 20px;
+    justify-items: end;
+}
+
+.name{
+    font-size: 40px;
+    text-decoration: none;
+    color: #f8a3ffe8;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.name:hover {
+    text-decoration: underline;
+
+}
+
+.exp_city, .emp_sched {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.card {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    background: #4e1c8ca8;
+    gap: 10px;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 25px;
+    padding: 4px;
+}
+
+.req, .resp, .skills, .employer {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+hr {
+    width: 95%;
 }
