@@ -93,6 +93,11 @@ def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
                 else:
                     vacancy.employment = "Не указано"
 
+                if item["schedule"]:
+                    vacancy.schedule = item["schedule"]["name"]
+                else:
+                    vacancy.schedule = "Не указано"
+
                 vac_url = requests.get(item["url"])
                 if vac_url.status_code != 200:
                     return {"urls": [], "message": "Что-то пошло не так"}
@@ -136,6 +141,7 @@ def vacancies(params: Params):
                     "responsibility": vac.responsibility,
                     "experience": vac.experience,
                     "employment": vac.employment,
+                    "schedule": vac.schedule,
                     "key_skills": vac.key_skills
                 }
             )

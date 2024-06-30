@@ -14,6 +14,7 @@ class Vacancies(Base):
     responsibility: Mapped[str]
     experience: Mapped[str]
     employment: Mapped[str]
+    schedule: Mapped[str]
     key_skills: Mapped[str]
 
 
