@@ -6,7 +6,6 @@ import time
 import re
 from data.orm import create_tables
 from fastapi import FastAPI
-from server.pydantic_models import Params
 
 app = FastAPI()
 
@@ -19,6 +18,7 @@ for area in areas_data[0]['areas']:
         areas[city["name"]] = city["id"]
 
 def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
+    print(area)
     page = 0
     cur_urls = []
     while True:
@@ -33,7 +33,7 @@ def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
         except:
             return {"urls": [], "message": "Неккоректный ввод"}
 
-        response = requests.get("https://api.hh.ru/vacancies", params)
+        response = requests.get("https://api.hh.ru/vacancies", params=params)
         if response.status_code != 200:
             return {"urls": [], "message": "Что-то пошло не так"}
         data = json.loads(response.content.decode())
@@ -122,8 +122,8 @@ def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
         return {"urls": cur_urls[:75], "message": "OK"}
 
 @app.post("/vacancies")
-def vacancies(params: Params):
-    parse_vacs = get_vacancies(params.text, params.area, params.salary)
+def vacancies(text: str="", area:str="Россия", salary:int=None):
+    parse_vacs = get_vacancies(text, area, salary)
     if parse_vacs["message"] != "OK":
         return {"items": [], "message": parse_vacs["message"]}
     res_vacs = {"items": []}
@@ -147,6 +147,9 @@ def vacancies(params: Params):
             )
         res_vacs["message"] = "OK"
         return res_vacs
+
+
+
 
 
 # create_tables()

@@ -35,6 +35,7 @@ h1{
 .main {
     display: flex;
     width: 100%;
+    gap:30px;
 }
 
 .base_of_vacs {
@@ -44,6 +45,9 @@ h1{
 
 .filters {
     width: 30%;
+    display: flex;
+    gap: 2vh;
+    flex-direction: column;
 }
 .navigation{
     height: 5vh;
@@ -113,4 +117,38 @@ h1{
 
 hr {
     width: 95%;
+}
+.f_name{
+    font-size: 50px;
+    font-weight: 600;
+}
+option{
+    background: #7d2cbcd6;
+}
+option:hover{
+    background:#7d2cbcd6;
+}
+select{
+    background: transparent;
+    border: 3px solid white;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 25px;
+    width: 75%;
+}
+.apply_filt{
+    background: #ffffff75;
+    color: #ffffff;
+    border: 3px solid white;
+    border-radius: 5px;
+    height: 6vh;
+    width: 75%;
+    font-size: 32px;
+}
+.f_sch, .f_empl {
+    font-size: 30px;
+}
+input[ type="checkbox"] {
+    width: 20px;
+    height: 20px;
 }

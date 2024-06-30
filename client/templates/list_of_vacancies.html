@@ -30,13 +30,13 @@
                     {% endif %}
                     {% for vacancy in data %}
                         <div class="card">
-                            <a class="name" href="{{ vacancy['url'] }}">{{ vacancy["name"] }}</a>
+                            <a class="name" href="{{ vacancy['url'] }}" target="_blanck">{{ vacancy["name"] }}</a>
                             <hr>
                             <span class="salary">{{ vacancy["salary"] }}</span>
                             <hr>
                             <div class="exp_city">
                                 <span class="experience"> Опыт: {{ vacancy["experience"] }}</span>
-                                <span class="area">Город: {{ vacancy["area"] }}</span>
+                                <span class="area">Местоположение: {{ vacancy["area"] }}</span>
                             </div>
                             <hr>
                             <span class="req">Требования: <br> {{ vacancy["requirement"] }}</span>
@@ -67,7 +67,31 @@
                 </form>
             </div>
             <form action="/list_of_vacancies/filter" method="post" class="filters">
-
+                <label class="f_name">Опыт работы:</label>
+                <select name="f_exp">
+                    <option value="doesnot matter">Не имеет значения</option>
+                    <option value="No exp">Нет опыта</option>
+                    <option value="from 1 to 3">От 1 года до 3 лет</option>
+                    <option value="from 3 to 6">От 3 до 6 лет</option>
+                    <option value="more 6">Более 6 лет</option>
+                </select>
+                <div class="f_empl">
+                    <label class="f_name">Тип занятости:</label> <br>
+                    <input type="checkbox" value="Full" name="empl_check">Полная занятость <br>
+                    <input type="checkbox" value="Part" name="empl_check">Частичная занятость <br>
+                    <input type="checkbox" value="Internship" name="empl_check">Стажировка <br>
+                    <input type="checkbox" value="Project" name="empl_check">Проектная работа <br>
+                    <input type="checkbox" value="Volunteering" name="empl_check">Волонтерство <br>
+                </div>
+                <div class="f_sch">
+                    <label class="f_name">График работы:</label> <br>
+                    <input type="checkbox" value="Full_day" name="sch_check">Полный день <br>
+                    <input type="checkbox" value="Remote" name="sch_check">Удаленная работа <br>
+                    <input type="checkbox" value="Flexible" name="sch_check">Гибкий график <br>
+                    <input type="checkbox" value="Shift" name="sch_check">Сменный график <br>
+                    <input type="checkbox" value="Vaht" name="sch_check">Вахтовый метод <br>
+                </div>
+                <input type="submit" class="apply_filt" value="Применить">
             </form>
         </div>
     {% endif %}

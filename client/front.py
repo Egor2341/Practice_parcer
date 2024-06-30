@@ -26,18 +26,25 @@ global_data = {}
 
 
 @front_app.post("/list_of_vacancies/{todo}", response_class=HTMLResponse)
-def list_of_vacancies(request: Request, todo: str, next: str = Form(default=None),
+def list_of_vacancies(request: Request,
+                      todo: str, next: str = Form(default=None),
                       prev: str = Form(default=None),
-                      text: str = Form(default=""), area: str = Form(default="Россия"),
-                      salary: int = Form(default=None)):
+                      text: str = Form(default=""),
+                      area: str = Form(default="Россия"),
+                      salary: int = Form(default=None),
+                      f_exp: str= Form(default=None),
+                      empl_check: list= Form(default=None),
+                      sch_check: list= Form(default=None)):
     global c, count_of_pages, global_data
+    print(area)
     if todo == "all":
         params = {
             "text": text,
             "area": area,
             "salary": salary
         }
-        data = requests.post("http://127.0.0.1:3000/vacancies", json=params).json()
+        print(params)
+        data = requests.post("http://127.0.0.1:3000/vacancies", params).json()
         global_data = data
 
         if data["message"] == "OK":
@@ -45,6 +52,9 @@ def list_of_vacancies(request: Request, todo: str, next: str = Form(default=None
             count_of_pages = len(data["items"]) // 20 if len(data["items"]) % 20 == 0 else len(data["items"]) // 20 + 1
     elif todo == "filter":
         c = 0
+        print(f_exp)
+        print(empl_check)
+        print(sch_check)
     elif todo == "page":
         if next == ">":
             if c < count_of_pages - 1:
