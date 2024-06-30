@@ -1,11 +1,13 @@
 import json
+from typing import Annotated, Union
+
 import requests
 from data.database import session_factory
 from data.models import Vacancies
 import time
 import re
 from data.orm import create_tables
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 
 app = FastAPI()
 
@@ -17,8 +19,8 @@ for area in areas_data[0]['areas']:
     for city in cities:
         areas[city["name"]] = city["id"]
 
-def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
-    print(area)
+
+def get_vacancies(text: str = "", area: str = "Россия", salary: int = None):
     page = 0
     cur_urls = []
     while True:
@@ -119,16 +121,12 @@ def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
         page += 1
         time.sleep(1)
 
-        return {"urls": cur_urls[:75], "message": "OK"}
+        return {"urls": cur_urls, "message": "OK"}
 
-@app.post("/vacancies")
-def vacancies(text: str="", area:str="Россия", salary:int=None):
-    parse_vacs = get_vacancies(text, area, salary)
-    if parse_vacs["message"] != "OK":
-        return {"items": [], "message": parse_vacs["message"]}
+
+def list_vacs_to_dict(vacs: list = None):
     res_vacs = {"items": []}
-    with session_factory() as session:
-        vacs = session.query(Vacancies).filter(Vacancies.url.in_(parse_vacs["urls"])).all()
+    try:
         for vac in vacs:
             res_vacs["items"].append(
                 {
@@ -145,12 +143,51 @@ def vacancies(text: str="", area:str="Россия", salary:int=None):
                     "key_skills": vac.key_skills
                 }
             )
-        res_vacs["message"] = "OK"
+        if res_vacs["items"]:
+            res_vacs["message"] = "OK"
+        else:
+            res_vacs["message"] = "По данному запросу ничего не найдено"
+        return res_vacs
+    except:
+        res_vacs["message"] = "Что-то пошло не так"
         return res_vacs
 
 
 
+@app.get("/vacancies")
+def vacancies(text: str = "", area: str = "Россия", salary: int = None):
+    parse_vacs = get_vacancies(text, area, salary)
+    if parse_vacs["message"] != "OK":
+        return {"items": [], "message": parse_vacs["message"]}
+    with session_factory() as session:
+        vacs = session.query(Vacancies).filter(Vacancies.url.in_(parse_vacs["urls"])).all()
+        return list_vacs_to_dict(vacs)
 
+@app.get("/filters")
+def filters(exp: str = "Не имеет значения",
+            empl: Annotated[Union[list[str], None], Query()] = None,
+            sch: Annotated[Union[list[str], None], Query()] = None,
+            urls: Annotated[Union[list[str], None], Query()] = None):
+    print(urls)
+    if not urls:
+        return {"items": [], "message": "Ничего не найдено"}
+    if exp == "Не имеет значения":
+        experience = ["От 1 года до 3 лет", "От 3 до 6 лет", "Нет опыта", "Более 6 лет"]
+    else:
+        experience = [exp]
+    if not empl:
+        employment = ["Полная занятость", "Частичная занятость", "Стажировка", "Проектная работа", "Волонтерство"]
+    else:
+        employment = empl
+    if not sch:
+        schedule = ["Полный день", "Удаленная работа", "Гибкий график", "Сменный график", "Вахтовый метод"]
+    else:
+        schedule = sch
+    with session_factory() as session:
+        vacs = session.query(Vacancies).filter(Vacancies.experience.in_(experience),
+                                                  Vacancies.employment.in_(employment),
+                                                  Vacancies.schedule.in_(schedule),
+                                                  Vacancies.url.in_(urls)).all()
+    return list_vacs_to_dict(vacs)
 
 # create_tables()
-

@@ -36,25 +36,32 @@ def list_of_vacancies(request: Request,
                       empl_check: list= Form(default=None),
                       sch_check: list= Form(default=None)):
     global c, count_of_pages, global_data
-    print(area)
     if todo == "all":
         params = {
             "text": text,
             "area": area,
             "salary": salary
         }
-        print(params)
-        data = requests.post("http://127.0.0.1:3000/vacancies", params).json()
+        data = requests.get("http://127.0.0.1:3000/vacancies", params=params).json()
         global_data = data
-
         if data["message"] == "OK":
             c = 0
             count_of_pages = len(data["items"]) // 20 if len(data["items"]) % 20 == 0 else len(data["items"]) // 20 + 1
     elif todo == "filter":
-        c = 0
-        print(f_exp)
-        print(empl_check)
-        print(sch_check)
+        urls = []
+        for item in global_data["items"]:
+            urls.append(item["url"])
+        params = {
+            "exp": f_exp,
+            "empl": empl_check,
+            "sch": sch_check,
+            "urls": urls
+        }
+        data = requests.get("http://127.0.0.1:3000/filters", params=params).json()
+        global_data = data
+        if data["message"] == "OK":
+            c = 0
+            count_of_pages = len(data["items"]) // 20 if len(data["items"]) % 20 == 0 else len(data["items"]) // 20 + 1
     elif todo == "page":
         if next == ">":
             if c < count_of_pages - 1:
