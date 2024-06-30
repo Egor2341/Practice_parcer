@@ -23,7 +23,7 @@ def home(request: Request):
 count_of_pages = 0
 c = 0
 global_data = {}
-
+urls = []
 
 @front_app.post("/list_of_vacancies/{todo}", response_class=HTMLResponse)
 def list_of_vacancies(request: Request,
@@ -35,7 +35,7 @@ def list_of_vacancies(request: Request,
                       f_exp: str= Form(default=None),
                       empl_check: list= Form(default=None),
                       sch_check: list= Form(default=None)):
-    global c, count_of_pages, global_data
+    global c, count_of_pages, global_data, urls
     if todo == "all":
         params = {
             "text": text,
@@ -47,16 +47,16 @@ def list_of_vacancies(request: Request,
         if data["message"] == "OK":
             c = 0
             count_of_pages = len(data["items"]) // 20 if len(data["items"]) % 20 == 0 else len(data["items"]) // 20 + 1
+            for item in global_data["items"]:
+                urls.append(item["url"])
     elif todo == "filter":
-        urls = []
-        for item in global_data["items"]:
-            urls.append(item["url"])
         params = {
             "exp": f_exp,
             "empl": empl_check,
             "sch": sch_check,
             "urls": urls
         }
+
         data = requests.get("http://127.0.0.1:3000/filters", params=params).json()
         global_data = data
         if data["message"] == "OK":

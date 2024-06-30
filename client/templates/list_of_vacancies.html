@@ -9,16 +9,16 @@
     {% if data["message"] != "OK" %}
         <div class="header">
             <h1>{{ data["message"] }}</h1>
-            <form action="/home" method="get">
+            <a href="/home">
                 <button type="submit" class="home">На главную</button>
-            </form>
+            </a>
         </div>
     {% else %}
         <div class="header">
             <h1>Найденные вакансии</h1>
-            <form action="/home" method="get">
+            <a href="/home">
                 <button type="submit" class="home">На главную</button>
-            </form>
+            </a>
         </div>
         <div class="main">
             <div class="base_of_vacs">

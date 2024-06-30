@@ -1,6 +1,5 @@
 import json
 from typing import Annotated, Union
-
 import requests
 from data.database import session_factory
 from data.models import Vacancies
@@ -11,14 +10,27 @@ from fastapi import FastAPI, Query
 
 app = FastAPI()
 
-areas_data = json.loads(requests.get("https://api.hh.ru/areas").content.decode())
-areas = {"Россия": 113}
-for area in areas_data[0]['areas']:
-    areas[area["name"]] = area["id"]
-    cities = area["areas"]
-    for city in cities:
-        areas[city["name"]] = city["id"]
 
+def start():
+    create_tables()
+    areas_data = json.loads(requests.get("https://api.hh.ru/areas").content.decode())
+    areas = {"Россия": 113}
+    for area in areas_data[0]['areas']:
+        areas[area["name"]] = area["id"]
+        cities = area["areas"]
+        for city in cities:
+            areas[city["name"]] = city["id"]
+
+    with open("server/file_areas.json", "w") as outfile:
+        json.dump(areas, outfile)
+
+
+with open('server/file_areas.json', 'r') as outfile:
+    areas = json.load(outfile)
+
+
+if areas == {}:
+    start()
 
 def get_vacancies(text: str = "", area: str = "Россия", salary: int = None):
     page = 0
@@ -153,7 +165,6 @@ def list_vacs_to_dict(vacs: list = None):
         return res_vacs
 
 
-
 @app.get("/vacancies")
 def vacancies(text: str = "", area: str = "Россия", salary: int = None):
     parse_vacs = get_vacancies(text, area, salary)
@@ -162,6 +173,7 @@ def vacancies(text: str = "", area: str = "Россия", salary: int = None):
     with session_factory() as session:
         vacs = session.query(Vacancies).filter(Vacancies.url.in_(parse_vacs["urls"])).all()
         return list_vacs_to_dict(vacs)
+
 
 @app.get("/filters")
 def filters(exp: str = "Не имеет значения",
@@ -185,9 +197,7 @@ def filters(exp: str = "Не имеет значения",
         schedule = sch
     with session_factory() as session:
         vacs = session.query(Vacancies).filter(Vacancies.experience.in_(experience),
-                                                  Vacancies.employment.in_(employment),
-                                                  Vacancies.schedule.in_(schedule),
-                                                  Vacancies.url.in_(urls)).all()
+                                               Vacancies.employment.in_(employment),
+                                               Vacancies.schedule.in_(schedule),
+                                               Vacancies.url.in_(urls)).all()
     return list_vacs_to_dict(vacs)
-
-# create_tables()
