@@ -22,13 +22,17 @@ def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
     page = 0
     cur_urls = []
     while True:
-        params = {
-            "text": text,
-            "area": areas[area.lower().capitalize()],
-            "salary": salary,
-            "page": page,
-            "per_page": 100
-        }
+        try:
+            params = {
+                "text": text,
+                "area": areas[area.lower().capitalize()],
+                "salary": salary,
+                "page": page,
+                "per_page": 100
+            }
+        except:
+            return {"urls": [], "message": "Неккоректный ввод"}
+
         response = requests.get("https://api.hh.ru/vacancies", params)
         if response.status_code != 200:
             return {"urls": [], "message": "Что-то пошло не так"}
@@ -116,7 +120,7 @@ def get_vacancies(text:str = "", area:str = "Россия", salary:int = None):
 def vacancies(params: Params):
     parse_vacs = get_vacancies(params.text, params.area, params.salary)
     if parse_vacs["message"] != "OK":
-        return {"items": [], "mesage": parse_vacs["message"]}
+        return {"items": [], "message": parse_vacs["message"]}
     res_vacs = {"items": []}
     with session_factory() as session:
         vacs = session.query(Vacancies).filter(Vacancies.url.in_(parse_vacs["urls"])).all()

@@ -3,8 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Поиск вакансий</title>
+    <link href="{{ url_for('static', path='/vacancies.css') }}" rel="stylesheet">
 </head>
 <body>
+    {% if data["message"] != "OK" %}
+        <div class="header">
+            <h1>{{ data["message"] }}</h1>
+            <form action="/home" method="get">
+                <button type="submi" class="home">На главную</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="header">
+            <h1>Найденные вакансии</h1>
+            <form action="/home" method="get">
+                <button type="submit" class="home">На главную</button>
+            </form>
+        </div>
+        <div class="main">
+            <div class="base_of_vacs">
+                <div class="list">
+                    {% if c + 1 == count_of_pages %}
+                        {% for vacancy in data["items"][c*20:]%}
+                            <div class="card">
+                                <span>{{vacancy["name"]}}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {% for vacancy in data["items"][c*20:(c+1)*20]%}
+                            <div class="card">
+                                <span>{{vacancy["name"]}}</span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <form  class="navigation" action="/list_of_vacancies/page" method="post">
+                    {% if c != 0 %}
+                        <input type="submit" name="prev" class="left" value="<">
+                    {% endif %}
+                    {% if c != count_of_pages - 1 %}
+                        <input type="submit" name="next" class="right" value=">">
+                    {% endif %}
+                </form>
+            </div>
+            <form action="/list_of_vacancies/filter" method="post" class="filters">
 
+            </form>
+        </div>
+    {% endif %}
 </body>
 </html>

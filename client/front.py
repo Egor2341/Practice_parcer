@@ -17,20 +17,41 @@ templates = Jinja2Templates(directory=st_abs_file_path_templates)
 
 @front_app.get("/home", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse(request=request, name="home.html")
+    return templates.TemplateResponse("home.html", {"request": request})
+
+
+count_of_pages = 0
+c = 0
+global_data = {}
 
 
 @front_app.post("/list_of_vacancies/{todo}", response_class=HTMLResponse)
-def list_of_vacancies(request: Request, todo: str,  text: str = Form(default=""), area: str = Form(default="Россия"),
+def list_of_vacancies(request: Request, todo: str, next: str = Form(default=None),
+                      prev: str = Form(default=None),
+                      text: str = Form(default=""), area: str = Form(default="Россия"),
                       salary: int = Form(default=None)):
+    global c, count_of_pages, global_data
     if todo == "all":
         params = {
             "text": text,
             "area": area,
             "salary": salary
         }
-        data = requests.post("http://127.0.0.1:3000/vacancies", json=params)
-        print(data.json())
+        data = requests.post("http://127.0.0.1:3000/vacancies", json=params).json()
+        global_data = data
+
+        if data["message"] == "OK":
+            c = 0
+            count_of_pages = len(data["items"]) // 20 if len(data["items"]) % 20 == 0 else len(data["items"]) // 20 + 1
     elif todo == "filter":
-        pass
-    return templates.TemplateResponse(request=request, name="list_of_vacancies.html")
+        c = 0
+    elif todo == "page":
+        if next == ">":
+            if c < count_of_pages - 1:
+                c += 1
+        if prev == "<":
+            if c > 0:
+                c -= 1
+
+    return templates.TemplateResponse("list_of_vacancies.html", {"request": request, "data": global_data, "c": c,
+                                                                 "count_of_pages": count_of_pages})

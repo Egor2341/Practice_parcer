@@ -1,0 +1,68 @@
+body {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    background: radial-gradient(#4158d0, #c850c0);
+    align-items: center;
+    color: white;
+    min-height: 100vh;
+    height: auto;
+}
+.header{
+    font-family: "Franklin Gothic";
+    padding: 3vh 0;
+    width: 80%;
+    display: flex;
+    justify-content: space-around;
+    margin-left: 20%;
+}
+
+h1{
+    height: 20%;
+    font-size: 90px;
+    margin: 0;
+}
+
+.home {
+    background-color: #ffffff75;
+    height: 8vh;
+    border-radius: 10px;
+    border: 2px solid;
+}
+
+.main {
+    display: flex;
+    width: 100%;
+}
+
+.base_of_vacs {
+    width: 67%;
+    margin-left: 3vw;
+}
+
+.filters {
+    width: 30%;
+}
+.navigation{
+    height: 5vh;
+    position: relative;
+}
+.right, .left{
+    width: 5%;
+    background-color: #ffffff75;
+    border-radius: 10px;
+    border: 2px solid;
+    height: 5vh;
+    position: absolute;
+}
+.right{
+    right: 30%;
+}
+.left{
+    left: 30%;
+}
+
+.list{
+    display: flex;
+    flex-direction: column;
+}
