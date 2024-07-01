@@ -24,6 +24,8 @@ count_of_pages = 0
 c = 0
 global_data = {}
 urls = []
+vac = ''
+cur_filters = ""
 
 @front_app.post("/list_of_vacancies/{todo}", response_class=HTMLResponse)
 def list_of_vacancies(request: Request,
@@ -35,13 +37,15 @@ def list_of_vacancies(request: Request,
                       f_exp: str= Form(default=None),
                       empl_check: list= Form(default=None),
                       sch_check: list= Form(default=None)):
-    global c, count_of_pages, global_data, urls
+    global c, count_of_pages, global_data, urls, vac, cur_filters
     if todo == "all":
         params = {
             "text": text,
             "area": area,
             "salary": salary
         }
+        cur_filters = ""
+        vac = text
         data = requests.get("http://127.0.0.1:3000/vacancies", params=params).json()
         global_data = data
         if data["message"] == "OK":
@@ -57,6 +61,13 @@ def list_of_vacancies(request: Request,
             "urls": urls
         }
 
+        if f_exp != "Не имеет значения":
+            cur_filters += f"опыт работы: {f_exp} "
+        if empl_check:
+            print(1)
+            cur_filters += f"тип занятости: {', '.join(empl_check)} "
+        if sch_check:
+            cur_filters += f"график работы: {', '.join(sch_check)} "
         data = requests.get("http://127.0.0.1:3000/filters", params=params).json()
         global_data = data
         if data["message"] == "OK":
@@ -71,4 +82,6 @@ def list_of_vacancies(request: Request,
                 c -= 1
 
     return templates.TemplateResponse("list_of_vacancies.html", {"request": request, "data": global_data, "c": c,
-                                                                 "count_of_pages": count_of_pages})
+                                                                 "count_of_pages": count_of_pages,
+                                                                 "text": vac,
+                                                                 "cur_filters": cur_filters})

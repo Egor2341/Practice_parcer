@@ -14,17 +14,5 @@
 #     for res in results:
 #         print(res.experience, res.employment, res.schedule)
 
-
-a = []
-sa = set(a)
-b = [1, 4, 5]
-sb = set(b)
-c = []
-sc = set(c)
-d = [2, 4, 6]
-sd = set(d)
-res = list(sb & sd)
-r = []
-r += b
-print(r)
-print(res)
+a = ["fafda"]
+print(", ".join(a))

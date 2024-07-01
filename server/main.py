@@ -1,7 +1,7 @@
 import json
 from typing import Annotated, Union
 import requests
-from data.database import session_factory
+from data.database import session_factory, Base, engine
 from data.models import Vacancies
 import time
 import re
@@ -9,6 +9,15 @@ from data.orm import create_tables
 from fastapi import FastAPI, Query
 
 app = FastAPI()
+
+
+try:
+    with session_factory() as session:
+        a = session.query(Vacancies).all()
+except:
+    create_tables()
+
+
 
 
 def start():
