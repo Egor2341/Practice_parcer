@@ -60,7 +60,7 @@ def list_of_vacancies(request: Request,
             "sch": sch_check,
             "urls": urls
         }
-
+        cur_filters = ""
         if f_exp != "Не имеет значения":
             cur_filters += f"опыт работы: {f_exp} "
         if empl_check:

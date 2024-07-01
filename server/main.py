@@ -44,6 +44,7 @@ if areas == {}:
 def get_vacancies(text: str = "", area: str = "Россия", salary: int = None):
     page = 0
     cur_urls = []
+
     while True:
         try:
             params = {
@@ -56,13 +57,15 @@ def get_vacancies(text: str = "", area: str = "Россия", salary: int = None
         except:
             return {"urls": [], "message": "Неккоректный ввод"}
 
-        response = requests.get("https://api.hh.ru/vacancies", params=params)
+        try:
+            response = requests.get("https://api.hh.ru/vacancies", params=params)
+        except:            return {"urls": [], "message": "Что-то пошло не так"}
         if response.status_code != 200:
             return {"urls": [], "message": "Что-то пошло не так"}
         data = json.loads(response.content.decode())
-
-        # if page == data["pages"] - 1:
-        if page == 1:
+        if not data["items"]:
+            return {"urls": [], "message": "По данному запросу ничего не найдено"}
+        if page == 1 or page == data["pages"] - 1:
             break
         for item in data["items"]:
             cur_urls.append(item["alternate_url"])
@@ -70,7 +73,6 @@ def get_vacancies(text: str = "", area: str = "Россия", salary: int = None
             with session_factory() as session:
                 if session.query(Vacancies).filter(Vacancies.url == item["alternate_url"]).first():
                     continue
-
                 vacancy = Vacancies(name=item["name"], url=item["alternate_url"])
                 if item["area"]:
                     vacancy.area = item["area"]["name"]
@@ -142,7 +144,7 @@ def get_vacancies(text: str = "", area: str = "Россия", salary: int = None
         page += 1
         time.sleep(1)
 
-        return {"urls": cur_urls, "message": "OK"}
+    return {"urls": cur_urls, "message": "OK"}
 
 
 def list_vacs_to_dict(vacs: list = None):
@@ -189,7 +191,6 @@ def filters(exp: str = "Не имеет значения",
             empl: Annotated[Union[list[str], None], Query()] = None,
             sch: Annotated[Union[list[str], None], Query()] = None,
             urls: Annotated[Union[list[str], None], Query()] = None):
-    print(urls)
     if not urls:
         return {"items": [], "message": "Ничего не найдено"}
     if exp == "Не имеет значения":
