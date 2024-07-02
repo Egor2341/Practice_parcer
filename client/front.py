@@ -1,3 +1,5 @@
+import time
+
 import requests
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
@@ -38,6 +40,7 @@ def list_of_vacancies(request: Request,
                       empl_check: list= Form(default=None),
                       sch_check: list= Form(default=None)):
     global c, count_of_pages, global_data, urls, vac, cur_filters
+
     if todo == "all":
         params = {
             "text": text,
@@ -46,7 +49,7 @@ def list_of_vacancies(request: Request,
         }
         cur_filters = ""
         vac = text
-        data = requests.get("http://127.0.0.1:3000/vacancies", params=params).json()
+        data = requests.get("http://server_app:3000/vacancies", params=params).json()
         global_data = data
         if data["message"] == "OK":
             c = 0
@@ -64,11 +67,10 @@ def list_of_vacancies(request: Request,
         if f_exp != "Не имеет значения":
             cur_filters += f"опыт работы: {f_exp} "
         if empl_check:
-            print(1)
             cur_filters += f"тип занятости: {', '.join(empl_check)} "
         if sch_check:
             cur_filters += f"график работы: {', '.join(sch_check)} "
-        data = requests.get("http://127.0.0.1:3000/filters", params=params).json()
+        data = requests.get("http://server_app:3000/filters", params=params).json()
         global_data = data
         if data["message"] == "OK":
             c = 0
@@ -80,7 +82,6 @@ def list_of_vacancies(request: Request,
         if prev == "<":
             if c > 0:
                 c -= 1
-
     return templates.TemplateResponse("list_of_vacancies.html", {"request": request, "data": global_data, "c": c,
                                                                  "count_of_pages": count_of_pages,
                                                                  "text": vac,

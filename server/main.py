@@ -1,7 +1,7 @@
 import json
 from typing import Annotated, Union
 import requests
-from data.database import session_factory, Base, engine
+from data.database import session_factory
 from data.models import Vacancies
 import time
 import re
@@ -10,14 +10,14 @@ from fastapi import FastAPI, Query
 
 app = FastAPI()
 
-
 try:
     with session_factory() as session:
         a = session.query(Vacancies).all()
 except:
     create_tables()
 
-
+with open('file_areas.json', 'r') as outfile:
+    areas = json.load(outfile)
 
 
 def start():
@@ -34,12 +34,9 @@ def start():
         json.dump(areas, outfile)
 
 
-with open('server/file_areas.json', 'r') as outfile:
-    areas = json.load(outfile)
-
-
 if areas == {}:
     start()
+
 
 def get_vacancies(text: str = "", area: str = "Россия", salary: int = None):
     page = 0
@@ -59,13 +56,14 @@ def get_vacancies(text: str = "", area: str = "Россия", salary: int = None
 
         try:
             response = requests.get("https://api.hh.ru/vacancies", params=params)
-        except:            return {"urls": [], "message": "Что-то пошло не так"}
+        except:
+            return {"urls": [], "message": "Что-то пошло не так"}
         if response.status_code != 200:
             return {"urls": [], "message": "Что-то пошло не так"}
         data = json.loads(response.content.decode())
         if not data["items"]:
             return {"urls": [], "message": "По данному запросу ничего не найдено"}
-        if page == 1 or page == data["pages"] - 1:
+        if page == 1 or page == data["pages"]:
             break
         for item in data["items"]:
             cur_urls.append(item["alternate_url"])
@@ -143,7 +141,6 @@ def get_vacancies(text: str = "", area: str = "Россия", salary: int = None
 
         page += 1
         time.sleep(1)
-
     return {"urls": cur_urls, "message": "OK"}
 
 
@@ -179,6 +176,7 @@ def list_vacs_to_dict(vacs: list = None):
 @app.get("/vacancies")
 def vacancies(text: str = "", area: str = "Россия", salary: int = None):
     parse_vacs = get_vacancies(text, area, salary)
+
     if parse_vacs["message"] != "OK":
         return {"items": [], "message": parse_vacs["message"]}
     with session_factory() as session:
