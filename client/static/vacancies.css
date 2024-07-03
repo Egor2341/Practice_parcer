@@ -1,0 +1,160 @@
+body {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    background: radial-gradient(#4158d0, #c850c0);
+    align-items: center;
+    color: white;
+    min-height: 100vh;
+    height: auto;
+}
+.header{
+    font-family: "Franklin Gothic";
+    padding: 3vh 0;
+    width: 80%;
+    display: flex;
+    justify-content: space-around;
+    margin-left: 20%;
+}
+
+h1{
+    height: 20%;
+    font-size: 90px;
+    margin: 0;
+}
+
+.home {
+    background-color: #ffffff75;
+    height: 8vh;
+    border-radius: 10px;
+    border: 3px solid white;
+    color: white;
+    font-size: 25px;
+}
+
+.main {
+    display: flex;
+    width: 100%;
+    gap:30px;
+}
+
+.base_of_vacs {
+    width: 67%;
+    margin-left: 3vw;
+}
+
+.filters {
+    width: 30%;
+    display: flex;
+    gap: 2vh;
+    flex-direction: column;
+}
+.navigation{
+    height: 5vh;
+    position: relative;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+}
+
+
+.right, .left{
+    width: 5%;
+    background-color: #ffffff75;
+    border-radius: 10px;
+    border: 2px solid;
+    height: 5vh;
+    position: absolute;
+}
+.right{
+    right: 30%;
+}
+.left{
+    left: 30%;
+}
+
+.list{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 20px;
+    justify-items: end;
+}
+
+.name{
+    font-size: 40px;
+    text-decoration: none;
+    color: #f8a3ffe8;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.name:hover {
+    text-decoration: underline;
+
+}
+
+.exp_city, .emp_sched {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #4e1c8ca8;
+    gap: 10px;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 25px;
+    padding: 4px;
+}
+
+.req, .resp, .skills, .employer {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+hr {
+    width: 95%;
+}
+.f_name{
+    font-size: 50px;
+    font-weight: 600;
+}
+option{
+    background: #7d2cbcd6;
+}
+option:hover{
+    background:#7d2cbcd6;
+}
+select{
+    background: transparent;
+    border: 3px solid white;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 25px;
+    width: 75%;
+}
+.apply_filt{
+    background: #ffffff75;
+    color: #ffffff;
+    border: 3px solid white;
+    border-radius: 5px;
+    height: 6vh;
+    width: 75%;
+    font-size: 32px;
+}
+.f_sch, .f_empl {
+    font-size: 30px;
+}
+input[ type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.info {
+    height: 20%;
+    font-size: 40px;
+    margin-bottom: 10px;
+}

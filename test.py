@@ -1,15 +1,14 @@
-# import re
-# a = "dfadsfadfa<adfafdsaf/>adfadfas"
-# pattern = re.compile('<.*?>')
-# a = re.sub(pattern, ' ', a)
-# print(a)
+import requests
 
-salary = {'from': 10000, 'to': 120000, 'currency': 'RUR', 'gross': False}
-res = ''
-if salary["from"]:
-    res += f"от {salary['from']} "
-if salary["to"]:
-    res += f"до {salary['to']} "
-res += salary["currency"]
-res = res.capitalize()
-print(res)
+params = {
+    "text": "разработчик",
+    "area": "Москва",
+    "salary": 50000
+}
+res = requests.get("http://127.0.0.1:3000/vacancies")
+urls = []
+for i in res.json()["items"]:
+    urls.append(i["url"])
+urls = "', '".join(urls)
+urls = "['" + urls + "']"
+print(urls)

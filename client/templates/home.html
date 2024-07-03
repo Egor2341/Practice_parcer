@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск вакансий</title>
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <h1>
+        Поиск вакансий
+    </h1>
+    <form class="home" action="/list_of_vacancies/all" method="post">
+        <div class="search">
+            <input type="text" name="text" class="text" placeholder="Введите вакансию">
+            <button type="submit">Поиск</button>
+        </div>
+        <div class="filters">
+            <input type="text" name="area" class="area par" placeholder="Город">
+            <input type="number" min="0" name="salary" class="salary par" placeholder="Зарплата">
+        </div>
+    </form>
+</body>
+</html>
