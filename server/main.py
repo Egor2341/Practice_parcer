@@ -52,7 +52,7 @@ def get_vacancies(text: str = "", area: str = "Россия", salary: int = None
                 "per_page": 100
             }
         except:
-            return {"urls": [], "message": "Неккоректный ввод"}
+            return {"urls": [], "message": "Некорректный ввод"}
 
         try:
             response = requests.get("https://api.hh.ru/vacancies", params=params)
