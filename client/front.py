@@ -1,5 +1,3 @@
-import time
-
 import requests
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse

@@ -21,7 +21,6 @@ with open('file_areas.json', 'r') as outfile:
 
 
 def start():
-    create_tables()
     areas_data = json.loads(requests.get("https://api.hh.ru/areas").content.decode())
     areas = {"Россия": 113}
     for area in areas_data[0]['areas']:
@@ -176,7 +175,6 @@ def list_vacs_to_dict(vacs: list = None):
 @app.get("/vacancies")
 def vacancies(text: str = "", area: str = "Россия", salary: int = None):
     parse_vacs = get_vacancies(text, area, salary)
-
     if parse_vacs["message"] != "OK":
         return {"items": [], "message": parse_vacs["message"]}
     with session_factory() as session:
