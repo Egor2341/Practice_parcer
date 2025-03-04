@@ -7,8 +7,8 @@ engine = create_engine(
     pool_pre_ping=True
 )
 
-
 session_factory = sessionmaker(engine)
+
 
 class Base(DeclarativeBase):
     pass
