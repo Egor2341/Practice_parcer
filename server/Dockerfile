@@ -1,8 +1,8 @@
 FROM python:3.11
 
-RUN mkdir /Backend
+RUN mkdir /server
 
-WORKDIR /Backend
+WORKDIR /server
 
 COPY requirements.txt .
 
